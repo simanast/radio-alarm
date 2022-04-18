@@ -1,20 +1,17 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import useAlarms from './src/use-alarms';
+import useSound from './src/use-sound';
+import ActiveAlarm from './src/active-alarm';
+import Alarms from './src/alarms/alarms';
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+	const { alarms, turnOffNotification, ...restAlarmsProps } = useAlarms();
+	const [ currentAlarmId, setCurrentAlarmId ] = useState(null);
+	const [ isAlarming, turnOff, time ] = useSound(currentAlarmId, alarms, turnOffNotification);
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+	return isAlarming ? (
+		<ActiveAlarm turnOff={turnOff} time={time} />
+	) : (
+		<Alarms alarms={alarms} setCurrentAlarmId={setCurrentAlarmId} {...restAlarmsProps} />
+	);
+}
